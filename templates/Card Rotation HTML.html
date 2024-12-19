@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}
+    <style>
+        body {
+            color: #fff;
+            background-color: #006ad9;
+            background-image: url('{% static 'img/Untitled design(1).png' %}'); /* مسیر تصویر */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-weight: 900;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            padding: 3rem;
+        }
+
+        .names {
+            font-size: 6rem;
+            color: black;
+        !important;
+            font-weight: bold;
+            text-align: center;
+            background-image: url('{% static 'img/4.png'%}');
+
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 2000px; /* تنظیم عرض مناسب */
+            height: 1000px; /* تنظیم ارتفاع مناسب */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto; /* مرکز کردن */
+        }
+
+        @media (min-width: 650px) {
+            body {
+                flex-direction: row;
+            }
+        }
+
+        main {
+            width: 100%;
+        }
+
+        @media (min-width: 650px) {
+            main {
+                min-width: 300px;
+            }
+        }
+
+        .roll {
+            cursor: pointer;
+            appearance: none;
+            color: white;
+            background-color: #1f2a36; /* Darkened color of #253241 */
+            text-decoration: none;
+            font-size: 3rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-weight: 900;
+            border: 5px solid #fff;
+            padding: .5em 2em;
+            border-radius: 3em;
+            transition: 200ms ease-in-out;
+        }
+
+        .roll:hover {
+            background-color: #fff;
+            color: #253241;
+        }
+
+
+        .winner {
+            font-size: 4rem;
+            text-align: center;
+            color: black;
+            background-image: url('{% static 'img/3.png' %}'); /* تصویر بلیط برای برنده */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 2000px;
+            height: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+        }
+
+        .winner span {
+            font-size: .35em;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .roll-again {
+            cursor: pointer;
+            appearance: none;
+            background-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-weight: 700;
+            padding: 0;
+            margin-top: 2em;
+            color: #fff;
+            border: none;
+            opacity: .5;
+            transition: 200ms ease-in-out;
+        }
+
+        .roll-again:hover {
+            opacity: 1;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .entries {
+            width: min-content;
+            margin-top: 3rem;
+            padding: 3rem 3rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @media (min-width: 650px) {
+            .entries {
+                border-top: 0;
+                border-left: 1px solid rgba(255, 255, 255, 0.2);
+                margin-top: 0;
+                margin-left: 3rem;
+            }
+        }
+
+        .entries h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .entries div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .entries input {
+            border-radius: 8px;
+            outline: none;
+            border: 0;
+            width: 200px;
+            padding: 0.5rem;
+            padding-right: 1.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+
+        .entries button {
+            cursor: pointer;
+            appearance: none;
+            background-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-weight: 700;
+            color: #fff;
+            border: none;
+            opacity: .5;
+            transition: 200ms ease-in-out;
+        }
+
+        .entries button:hover {
+            opacity: 1;
+        }
+
+        .remove-item {
+            position: absolute;
+            padding: 0.25rem;
+            right: 0.3rem;
+            color: #000000;
+        !important;
+        }
+
+        .add-item {
+            margin-top: 1rem;
+            border: 2px solid;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <button class="roll" onclick="rollClick()">شروع</button>
+    <div class="names hide"></div>
+    <div class="winner hide"></div>
+    <button style="color: black" class="roll-again hide" onclick="rollClick()">چرخش مجدد</button>
+
+    <form class="entries" onsubmit="return formSubmit()">
+        <h2>شرکت کنندگان</h2>
+        <div>
+            <input style="color: black" type="text" name="entries[]" value="Item #1">
+            
+            <button class="remove-item" type="button" onclick="removeItem(event)" style="color: black;">×</button>
+        </div>
+                    
+            <div>
+                <input type="text" name="entries[]" value="ava.94643" data-listener-added_cd070af8="true">
+                <button class="remove-item" type="button" onclick="removeItem(event)">×</button>
+            </div>
+        <button style="color: black" class="add-item" type="button" onclick="addItem(event)">اضافه کردن</button>
+        <button type="submit" class="hide">Submit</button>
+    </form>
+</main>
+
+<script>
+
+    const rollEl = document.querySelector(".roll");
+    const rollAgainEl = document.querySelector(".roll-again");
+    const namesEl = document.querySelector(".names");
+    const winnerEl = document.querySelector(".winner");
+    const entriesEl = document.querySelector(".entries");
+    const addItemEl = document.querySelector(".add-item");
+
+    function randomName() {
+        const ENTRIES = [...entriesEl["entries[]"].values()].map((i) => i.value);
+        const rand = Math.floor(Math.random() * ENTRIES.length);
+        const name = ENTRIES[rand];
+        namesEl.innerText = name;
+    }
+
+
+    // بارگذاری اسامی پیش‌فرض هنگام لود صفحه
+    document.addEventListener("DOMContentLoaded", loadDefaultNames);
+
+
+    function rollClick() {
+        rollEl.classList.add("hide");
+        rollAgainEl.classList.add("hide");
+        winnerEl.classList.add("hide");
+        namesEl.classList.remove("hide");
+
+        setDeceleratingTimeout(randomName, 10, 30);
+
+        setTimeout(() => {
+            namesEl.classList.add("hide");
+            winnerEl.classList.remove("hide");
+            rollAgainEl.classList.remove("hide");
+
+            const winner = namesEl.innerText;
+            winnerEl.innerText = winner;
+        }, 6000);
+    }
+
+    function setDeceleratingTimeout(callback, factor, times) {
+        const internalCallback = ((t, counter) => {
+            return () => {
+                if (--t > 0) {
+                    setTimeout(internalCallback, ++counter * factor);
+                    callback();
+                }
+            };
+        })(times, 0);
+
+        setTimeout(internalCallback, factor);
+    }
+
+    function removeItem(e) {
+        e.preventDefault();
+        const target = e.target.closest("div");
+        target.remove();
+        return false;
+    }
+
+    function addItem(e) {
+        e.preventDefault();
+        const items = entriesEl.querySelectorAll("input").length;
+        const newItem = document.createElement("div");
+        newItem.innerHTML = `
+        <input type="text" name="entries[]" value="Item #${items + 1}">
+        <button class="remove-item" type="button" onclick="removeItem(event)">×</button>
+      `;
+        addItemEl.parentNode.insertBefore(newItem, addItemEl);
+        return false;
+    }
+
+    function formSubmit() {
+        rollClick();
+        return false;
+    }
+
+    window.addEventListener("load", (evt) => {
+        const url = new URL(window.location.href);
+        const entriesString = url.searchParams.get("entries") || "";
+        const entries =
+            entriesString
+                .split(",")
+                .map((e) => e.trim())
+                .filter((e) => !!e) || [];
+
+        if (entries.length) {
+            console.log("found entries from query params", entries);
+            entries.forEach((entry, i) => {
+                let input = entriesEl.querySelectorAll("input")[i];
+                if (!input && i > 2) addItem(evt);
+                if (!input) input = entriesEl.querySelectorAll("input")[i];
+                if (input) input.value = entry;
+            });
+        }
+    });
+
+    function playWinnerGif() {
+        const gifEl = document.createElement("div");
+        gifEl.style.position = "fixed";
+        gifEl.style.top = "0";
+        gifEl.style.left = "0";
+        gifEl.style.width = "100%";
+        gifEl.style.height = "100%";
+        gifEl.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+        gifEl.style.display = "flex";
+        gifEl.style.justifyContent = "center";
+        gifEl.style.alignItems = "center";
+        gifEl.style.zIndex = "9999";
+
+        const gif = document.createElement("img");
+        gif.src = "your-gif-file.gif"; // مسیر گیف خود را اینجا قرار دهید
+        gif.style.width = "50%";
+        gif.style.height = "auto";
+
+        gifEl.appendChild(gif);
+        document.body.appendChild(gifEl);
+
+        // حذف گیف پس از 5 ثانیه
+        setTimeout(() => {
+            gifEl.remove();
+        }, 5000);
+    }
+
+</script>
+</body>
+</html>
