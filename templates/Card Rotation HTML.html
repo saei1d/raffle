@@ -25,22 +25,35 @@
         }
 
         .names {
-            font-size: 6rem;
+            font-size: 3rem;
             color: black;
-        !important;
             font-weight: bold;
             text-align: center;
             background-image: url('{% static 'img/4.png'%}');
-
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            width: 2000px; /* تنظیم عرض مناسب */
-            height: 1000px; /* تنظیم ارتفاع مناسب */
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto; /* مرکز کردن */
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .names {
+                font-size: 2rem;
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .names {
+                font-size: 1.5rem;
+                height: 200px;
+            }
         }
 
         @media (min-width: 650px) {
@@ -81,19 +94,34 @@
 
 
         .winner {
-            font-size: 4rem;
+            font-size: 3rem;
             text-align: center;
             color: black;
-            background-image: url('{% static 'img/3.png' %}'); /* تصویر بلیط برای برنده */
+            background-image: url('{% static 'img/3.png' %}');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            width: 2000px;
-            height: 1000px;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 1rem auto;
+        }
+
+        @media (max-width: 768px) {
+            .winner {
+                font-size: 2rem;
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .winner {
+                font-size: 1.5rem;
+                height: 200px;
+            }
         }
 
         .winner span {
@@ -228,16 +256,42 @@
     const entriesEl = document.querySelector(".entries");
     const addItemEl = document.querySelector(".add-item");
 
+    // Store all entries
+    let allEntries = [];
+
+    // Get all entries from the form
+    function getAllEntries() {
+        return [...entriesEl.querySelectorAll("input[name='entries[]']")].map(input => input.value);
+    }
+
+    // Update allEntries array
+    function updateEntries() {
+        allEntries = getAllEntries();
+    }
+
+    // Function to remove winner from the list
+    function removeWinnerFromList(winner) {
+        const inputs = entriesEl.querySelectorAll("input[name='entries[]']");
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].value === winner) {
+                inputs[i].closest("div").remove();
+                break;
+            }
+        }
+        updateEntries();
+    }
+
     function randomName() {
-        const ENTRIES = [...entriesEl["entries[]"].values()].map((i) => i.value);
-        const rand = Math.floor(Math.random() * ENTRIES.length);
-        const name = ENTRIES[rand];
+        updateEntries();
+        if (allEntries.length === 0) {
+            namesEl.innerText = "هیچ شرکت کننده‌ای باقی نمانده است";
+            return;
+        }
+        const rand = Math.floor(Math.random() * allEntries.length);
+        const name = allEntries[rand];
         namesEl.innerText = name;
     }
 
-
-    // بارگذاری اسامی پیش‌فرض هنگام لود صفحه
-    document.addEventListener("DOMContentLoaded", loadDefaultNames);
 
 
     function rollClick() {
@@ -255,6 +309,11 @@
 
             const winner = namesEl.innerText;
             winnerEl.innerText = winner;
+            
+            // Remove the winner from the entries list
+            if (winner !== "هیچ شرکت کننده‌ای باقی نمانده است") {
+                removeWinnerFromList(winner);
+            }
         }, 6000);
     }
 
@@ -275,6 +334,7 @@
         e.preventDefault();
         const target = e.target.closest("div");
         target.remove();
+        updateEntries();
         return false;
     }
 
@@ -287,6 +347,7 @@
         <button class="remove-item" type="button" onclick="removeItem(event)">×</button>
       `;
         addItemEl.parentNode.insertBefore(newItem, addItemEl);
+        updateEntries();
         return false;
     }
 
@@ -313,6 +374,9 @@
                 if (input) input.value = entry;
             });
         }
+        
+        // Initialize entries array
+        updateEntries();
     });
 
     function playWinnerGif() {
